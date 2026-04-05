@@ -10,13 +10,14 @@ class TestConfigLoader:
 
     def test_load_valid_config(self, tmp_path):
         """测试加载有效配置"""
-        config_content = """
+        api_key = os.environ.get('QWEN_API_KEY', 'sk-test-key')
+        config_content = f"""
 collection:
   top_n: 5
 github:
   api_token: ""
 qwen:
-  api_key: "sk-test"
+  api_key: "{api_key}"
 output:
   base_dir: "output"
 dedup:
