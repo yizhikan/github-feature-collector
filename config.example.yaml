@@ -1,0 +1,38 @@
+# 采集配置
+collection:
+  top_n: 1  # 采集热门仓库数量，运行时命令行参数可覆盖
+
+# GitHub 配置
+github:
+  api_token: ""  # 可选，留空时使用未认证 API
+  issues_per_page: 2
+  max_pages: 1
+  issue_state: "open"
+  sort_by: "created"
+  sort_direction: "desc"
+  request_interval: 1.0  # 秒
+
+# 通义千问配置
+qwen:
+  api_key: "YOUR_QWEN_API_KEY_HERE"
+  model: "qwen-plus"
+  request_interval: 0.5  # 秒
+
+# 输出配置
+output:
+  base_dir: "output"
+  format: ["markdown", "json"]
+
+# 去重配置
+dedup:
+  storage_file: "processed.json"
+
+# 重试配置
+retry:
+  max_retries: 3
+  backoff_multiplier: 2
+
+# 日志配置
+logging:
+  level: "DEBUG"
+  file: "logs/app.log"
