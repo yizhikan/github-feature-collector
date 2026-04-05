@@ -63,10 +63,18 @@ def process_item(fetcher, qwen_filter, dedup, item: dict, item_type: str) -> dic
     url = item.get('url', '') or item.get('html_url', '')
 
     # 提取互动数据
-    reactions = item.get('reactions', {}).get('total_count', 0) or \
-                item.get('upvotes', {}).get('totalCount', 0) or 0
-    comments = item.get('comments', {}).get('total_count', 0) or \
-               item.get('comments', {}).get('totalCount', 0) or 0
+    reactions_data = item.get('reactions', {})
+    reactions = reactions_data.get('total_count', 0) if isinstance(reactions_data, dict) else 0
+    if not reactions:
+        reactions = item.get('upvotes', {}).get('totalCount', 0) if isinstance(item.get('upvotes'), dict) else 0
+
+    comments_data = item.get('comments', {})
+    comments = comments_data.get('total_count', 0) if isinstance(comments_data, dict) else 0
+    if not comments:
+        comments = item.get('comments', {}).get('totalCount', 0) if isinstance(item.get('comments'), dict) else 0
+    # Handle case where comments is directly an integer
+    if isinstance(item.get('comments'), int):
+        comments = item.get('comments', 0)
 
     # 调用大模型过滤
     result = qwen_filter.filter_content(
