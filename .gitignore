@@ -50,3 +50,6 @@ Thumbs.db
 # Config (keep template, ignore actual config)
 config.yaml
 processed.json
+
+# Plans (design documents, not for release)
+docs/plans/
