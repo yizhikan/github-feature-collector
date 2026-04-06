@@ -45,13 +45,13 @@ github:
 
 ```bash
 # 使用默认配置（1 个仓库）
-python src/main.py
+python -m src.main
 
 # 指定采集数量
-python src/main.py --top-n 10
+python -m src.main --top-n 10
 
 # 指定配置文件
-python src/main.py --config my_config.yaml
+python -m src.main --config my_config.yaml
 ```
 
 ### 4. 查看结果
