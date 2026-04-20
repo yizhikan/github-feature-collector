@@ -34,7 +34,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def process_item(fetcher, qwen_filter, dedup, item: dict, item_type: str) -> dict:
+def process_item(fetcher, qwen_filter, dedup, repo_full_name: str, item: dict, item_type: str) -> dict:
     """
     处理单条 Issue/Discussion
 
@@ -42,6 +42,7 @@ def process_item(fetcher, qwen_filter, dedup, item: dict, item_type: str) -> dic
         fetcher: GitHub 获取器（用于重试等）
         qwen_filter: Qwen 过滤器
         dedup: 去重管理器
+        repo_full_name: 仓库全名 (owner/repo)
         item: Issue/Discussion 数据
         item_type: 'Issue' 或 'Discussion'
 
@@ -87,7 +88,13 @@ def process_item(fetcher, qwen_filter, dedup, item: dict, item_type: str) -> dic
 
     if not result or not result.get('included'):
         # 标记为已处理（即使不收录）
-        dedup.mark_processed(item_id)
+        dedup.mark_processed(
+            item_id=item_id,
+            repo=repo_full_name,
+            item_type=item_type,
+            url=url,
+            title=title
+        )
         return None
 
     # 构建结果
@@ -138,15 +145,31 @@ def process_repo(fetcher, qwen_filter, dedup, repo: dict) -> list:
         if 'pull_request' in issue:
             continue
 
-        result = process_item(fetcher, qwen_filter, dedup, issue, 'Issue')
+        result = process_item(fetcher, qwen_filter, dedup, full_name, issue, 'Issue')
         if result:
+            # 收录的也标记为已处理
+            dedup.mark_processed(
+                item_id=str(issue.get('id', '') or issue.get('number', '')),
+                repo=full_name,
+                item_type='Issue',
+                url=result.get('url', ''),
+                title=result.get('title', '')
+            )
             requirements.append(result)
 
     # 获取并处理 Discussions
     discussions = fetcher.fetch_discussions(owner, repo_name)
     for discussion in discussions:
-        result = process_item(fetcher, qwen_filter, dedup, discussion, 'Discussion')
+        result = process_item(fetcher, qwen_filter, dedup, full_name, discussion, 'Discussion')
         if result:
+            # 收录的也标记为已处理
+            dedup.mark_processed(
+                item_id=str(discussion.get('id', '') or discussion.get('number', '')),
+                repo=full_name,
+                item_type='Discussion',
+                url=result.get('url', ''),
+                title=result.get('title', '')
+            )
             requirements.append(result)
 
     logger.info(f"仓库 {owner}/{repo_name} 处理完成，收录 {len(requirements)} 条需求")

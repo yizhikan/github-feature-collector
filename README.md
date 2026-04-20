@@ -45,13 +45,13 @@ github:
 
 ```bash
 # 使用默认配置（1 个仓库）
-python src/main.py
+python -m src.main
 
 # 指定采集数量
-python src/main.py --top-n 10
+python -m src.main --top-n 10
 
 # 指定配置文件
-python src/main.py --config my_config.yaml
+python -m src.main --config my_config.yaml
 ```
 
 ### 4. 查看结果
@@ -59,6 +59,21 @@ python src/main.py --config my_config.yaml
 输出文件位于 `output/<owner>-<repo>/` 目录：
 - `requirements.md` - Markdown 格式需求清单
 - `requirements.json` - JSON 格式需求清单
+
+### 5. 查询已处理的 Issue/Discussion
+
+已处理的 Issue/Discussion 会记录在 `processed.json` 文件中（路径由配置项 `dedup.storage_file` 指定），包含仓库、类型、标题和链接。
+
+```bash
+# 列出所有已处理的项目
+python -m src.query_processed --list
+
+# 根据 ID 查询单个项目
+python -m src.query_processed --id 12345
+
+# 显示完整 JSON 信息
+python -m src.query_processed --list --verbose
+```
 
 ## 配置说明
 

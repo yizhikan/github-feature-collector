@@ -10,12 +10,13 @@ class TestQwenFilter:
     @pytest.fixture
     def qwen_filter(self):
         config = {
-            'api_key': os.environ.get('QWEN_API_KEY', 'sk-3f1064f79d9d45cda7d58005b89ff926'),
+            'api_key': os.environ.get('QWEN_API_KEY', ''),
             'model': 'qwen-plus',
             'request_interval': 0.5
         }
         return QwenFilter(config)
 
+    @pytest.mark.skipif(not os.environ.get('QWEN_API_KEY'), reason="requires QWEN_API_KEY environment variable")
     def test_filter_issue_real(self, qwen_filter):
         """测试过滤 Issue（实时 API）"""
         result = qwen_filter.filter_content(
